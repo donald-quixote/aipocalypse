@@ -1,11 +1,13 @@
 <div style="text-align: center;">
 
 ![](assets/zombie_v_shark.jpg)
+
 <i>
 Can language-based agents make the zombie apocalypse more coherent than this?
 
 [Zombi 2 - 1979](https://www.rottentomatoes.com/m/zombi_2)
 </i>
+
 </div>
 
 # Aipocalypse
