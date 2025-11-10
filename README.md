@@ -19,7 +19,10 @@ Aipocalypse is a for-funsies personal project where I will throw the AI kitchen 
 I will learn stuff. Maybe other people will learn stuff. Hopefully the survivor agents will learn stuff (as I do plan to build a system modeling congitive processes for language-based agents).
 
 ## Where are we at?
-- Started simple with my first ever LangGraph flow to generate a candidate set of agent personalities. This is more scaffolding right now - setting a model for a story character and loosely considering the kinds of knowledge that a character will have about themself and the kinds of knowledge they will have about others. 
+- Started simple with my first ever LangGraph flow to generate a candidate set of agent personalities. This is more scaffolding right now - setting a model for a story character and loosely considering the kinds of knowledge that a character will have about themself and the kinds of knowledge they will have about others.
+- Scaffolded a first-pass at a survivor agent system prompt that will contain the observable world state and memory components. Still lots of structure to add here to separate out generations for observable states and internal emotional states.
+  - See notebook for some initial trials! One interesting note: GPT 4.1 mini does not like violence... which will be rough for simulating a zombie apocalypse! We need a trained killer LLM :D 
+- Scaffolded some game entities to carry observable states across agent invocations
 
 ## Where are we going next?
 - I was inspired by Adam Lucek's [agentic memory](https://github.com/ALucek/agentic-memory) demonstration and plan to scaffold the basic blocks of episodic and semantic memory and learning. 
