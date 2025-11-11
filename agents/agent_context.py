@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class ReflexiveContext(BaseModel):
+class TargetingActionsContext(BaseModel):
     description: str
 
 class SituationalContext(BaseModel):

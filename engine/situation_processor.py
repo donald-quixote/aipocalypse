@@ -1,12 +1,12 @@
 from agents.agent_context import CharacterBackstoryContext, EnvironmentalContext, EpisodicMemoryContext, ImplicitBiasContext, PhysicalStatusContext, ReflexiveContext, RelevantKnowledgeContext, SituationalContext
-from models.game_entities import Environment, ObservableEnvironment
+from models.game_state import GameWorld
 from prompts.story_character_prompts import build_story_character_prompt
 
 
 class SituationProcessor():
-    def __init__(self, environment: ObservableEnvironment, situation_idx: int):
-        self.environment = environment
-        self.situation = environment.active_situations[situation_idx]
+    def __init__(self, game_world: GameWorld, situation_idx: int):
+        self.game_world = game_world
+        self.situation = game_world.active_situations[situation_idx]
 
     def process_actor(self, actor_id: str):
         current_actor = self.environment.actors[actor_id]
@@ -36,4 +36,13 @@ class SituationProcessor():
             backstory=None,
             episodic_memory=None,
         )
+
+    #     targeting_actions=None,   situations action queue
+    #     situation=None,           situation
+    #     environment=None,         environment
+    #     biases=None,              internal state on actor
+    #     physical_status=None,     observable state on actor
+    #     knowledge=None,           semantic store lookup
+    #     backstory=None,           internal state on actor
+    #     episodic_memory=None,     episodic store lookup
 
