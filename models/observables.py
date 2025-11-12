@@ -44,12 +44,19 @@ class ObservableCondition(StrEnum):
     FUNCTIONAL = "FUNCTIONAL"
     GOOD_CONDITION = "GOOD_CONDITION"
 
-class ObservableValence(StrEnum):
+class ObservableArousal(StrEnum):
     INTENSE = "INTENSE"
     ALERT = "ALERT"
     CALM = "CALM"
     PASSIVE = "PASSIVE"
     UNRESPONSIVE = "UNRESPONSIVE"
+
+class ObservableControl(StrEnum):
+    DOMINANT = "DOMINANT"
+    ASSERTIVE = "ASSERTIVE"
+    COMPOSED = "COMPOSED"
+    SUBMISSIVE = "SUBMISSIVE"
+    IMMOBILIZED = "IMMOBILIZED"
 
 ID_TYPE = TypeVar("ID_TYPE", bound=EntityId)
 STATE_TYPE = TypeVar("STATE_TYPE", bound=ObservableState)
@@ -79,7 +86,8 @@ class ObservableLocationEntity(ObservableEntity[LocationId, ObservableLocationSt
 class ObservableActorState(ObservableState):
     location_id: LocationId
     health: ObservableHealth
-    valence: ObservableValence
+    arousal: ObservableArousal
+    control: ObservableControl
     emotion: Keyword
 
 class ObservableActorEntity(ObservableEntity[ActorId, ObservableActorState]):
@@ -111,6 +119,9 @@ class ObservableAction(Observable):
     Actions or activities that can be observed by agents.
     This object's facts and keywords should not be static descriptions of entities or attributes.
     This object's facts and keywords should describe actions and activities.
+    Actions are clear verbs that will meanigfully change the state of entities.
+    Do not use verbs like "remaining" "continuing" "standing" or other words that signify a lack of change.
+    If there will be no meaningful change from an action, then do not generate that action.
     Actions have clear instigator(s) and potentially target(s) as well.
     Actions can only be instigated by actors.
     This object's facts and keywords should not describe the outcomes of the action, rather only the action itself.

@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class Keyword(BaseModel):
     value: str
+    model_config = dict(frozen=True)
 
 
 #Entity IDs
@@ -42,6 +43,13 @@ class StaticKeywords:
     CALM = Keyword(value="CALM")
     PASSIVE = Keyword(value="PASSIVE")
     UNRESPONSIVE = Keyword(value="UNRESPONSIVE")
+
+    # Control Keywords
+    DOMINANT = Keyword(value="DOMINANT")
+    ASSERTIVE = Keyword(value="ASSERTIVE")
+    COMPOSED = Keyword(value="COMPOSED")
+    SUBMISSIVE = Keyword(value="SUBMISSIVE")
+    IMMOBILIZED = Keyword(value="IMMOBILIZED")
 
     # Emotion Keywords
 

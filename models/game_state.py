@@ -1,71 +1,73 @@
-from typing import List, Set
+from typing import Dict, List, NoReturn, Set
 
 from pydantic import BaseModel
 
-from models.generations import GeneratableTuple
 from models.keywords import ActorId, ItemId, LocationId
 from models.observables import ObservableAction, ObservableActorEntity, ObservableEvent, ObservableItemEntity, ObservableLocationEntity, ObservableOutcome
 
 
-class LocationEntity(BaseModel):
-    """
-    Combines the observable state (facts) of a location with narrative prose grounded in and embelishing these facts
-    """
-    observable: ObservableLocationEntity
-    narrative_description: str
-
-class ActorEntity(BaseModel):
-    """
-    Combines the observable state (facts) of an actor (story character) with narrative prose grounded in and embelishing these facts
-    """
-    observable: ObservableActorEntity
-    narrative_description: str
-
-class ItemEntity(BaseModel):
-    """
-    Combines the observable state (facts) of an item with narrative prose grounded in and embelishing these facts
-    """
-    observable: ObservableItemEntity
-    narrative_description: str
-
-class Situation(BaseModel):
+class Episode(BaseModel):
     """
     An ongoing interaction between multiple actors.
-    The primary game loop revolves around playing out a situation by 
-    prompting each actor to respond to the conditions of the situation until resolution
+    The primary game loop revolves around playing out a episode by 
+    prompting each actor to respond to the conditions of the episode until resolution
     """
-    actors_ids: List[ActorId]
-    event_history: List[ObservableEvent | ObservableAction | ObservableOutcome]
-    actor_action_queues: List[GeneratableTuple[ActorId, List[ObservableEvent | ObservableAction]]]
+    actor_ids: Set[ActorId] = {}
+    event_history: List[ObservableEvent | ObservableAction | ObservableOutcome] = []
+    actor_action_queues: Dict[ActorId, List[ObservableEvent | ObservableAction]] = {}
+
+    def get_actor_targeting_actions(self, actor_id: ActorId) -> List[ObservableEvent | ObservableAction]:
+        return self.actor_action_queues.setdefault(actor_id, [])
+    
+    def remove_processed_actions(self, actor_id: ActorId) -> NoReturn:
+        del self.actor_action_queues[actor_id]
+
 
 class GameWorld(BaseModel):
     """
     The central state container for game entities and events.
-    This is the game world that persists across and beyond multiple situations
+    This is the game world that persists across and beyond multiple episodes
     """
-    locations: List[GeneratableTuple[LocationId, LocationEntity]] = {}
-    actors: List[GeneratableTuple[ActorId, ActorEntity]] = {}
-    items: List[GeneratableTuple[ItemId, ItemEntity]] = {}
-    active_situations: List[Situation] = []
+    locations: Dict[LocationId, ObservableLocationEntity] = {}
+    actors: Dict[ActorId, ObservableActorEntity] = {}
+    items: Dict[ItemId, ObservableItemEntity] = {}
+    active_episodes: List[Episode] = []
 
-    #TODO: support merging of situations
-    def get_actor_situations(self, actor_id: ActorId) -> List[Situation]:
-        return [situ for situ in self.active_situations if actor_id in situ.actors_ids]
+    def get_actor(self, actor_id: ActorId) -> ObservableActorEntity:
+        return self.actors[actor_id]
+
+    def get_location(self, location_id: LocationId) -> ObservableLocationEntity:
+        return self.locations[location_id]
     
-    def get_actor_location(self, actor_id: ActorId) -> LocationEntity:
-        actor = self.actors[actor_id]
-        return self.locations[actor.observable.state_history[-1].location_id]
+    def get_item(self, item_id: ItemId) -> ObservableItemEntity:
+        return self.items[item_id]
 
-    def get_actors_in_location(self, location_id: LocationId) -> List[ActorEntity]:
-        return [actor for _, actor in self.actors.items() if actor.state_history[-1].location_id == location_id]
+    #TODO: support merging of episode
+    def get_actor_episodes(self, actor_id: ActorId) -> List[Episode]:
+        return [episode for episode in self.active_episodes if actor_id in episode.actor_ids]
     
-    def get_item_location(self, item_id: ItemId) -> LocationEntity:
-        item = self.items[item_id]
-        return self.locations[item.observable.state_history[-1].location_id]
+    def get_actor_location(self, actor_id: ActorId) -> ObservableLocationEntity:
+        return self.get_location(self.get_actor(actor_id).state_history[-1].location_id)
 
-    def get_items_in_location(self, location_id: LocationId) -> List[ItemEntity]:
+    def get_actors_in_location(self, location_id: LocationId) -> List[ObservableActorEntity]:
+        return [actor for actor in self.actors.values() if actor.state_history[-1].location_id == location_id]
+    
+    def get_item_location(self, item_id: ItemId) -> ObservableLocationEntity:
+        return self.get_location(self.get_item(item_id).state_history[-1].location_id)
+
+    def get_items_in_location(self, location_id: LocationId) -> List[ObservableItemEntity]:
         # actor_ids = [actor.id for actor in self.get_actors_in_location(location_id)]
-        return [item for _,item in self.items.items() if item.state_history[-1].holder_id in location_id]
+        return [item for item in self.items.values() if item.state_history[-1].holder_id == location_id]
     
-    def get_items_for_actor(self, actor_id: ActorId) -> List[ItemEntity]:
-        return [item for _, item in self.items.items() if item.state_history[-1].holder_id == actor_id]
+    def get_items_for_actor(self, actor_id: ActorId) -> List[ObservableItemEntity]:
+        return [item for item in self.items.values() if item.state_history[-1].holder_id == actor_id]
+
+
+class GameWorldManager:
+    __game_world: GameWorld = None
+
+    def get() -> GameWorld:
+        return GameWorldManager.__game_world
+    
+    def set(game_world: GameWorld) -> NoReturn:
+        GameWorldManager.__game_world = game_world
