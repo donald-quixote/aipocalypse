@@ -20,7 +20,8 @@ class Episode(BaseModel):
         return self.actor_action_queues.setdefault(actor_id, [])
     
     def remove_processed_actions(self, actor_id: ActorId) -> NoReturn:
-        del self.actor_action_queues[actor_id]
+        if actor_id in self.actor_action_queues:
+            del self.actor_action_queues[actor_id]
 
 
 class GameWorld(BaseModel):

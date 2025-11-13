@@ -1,10 +1,12 @@
 import copy
+import time
 from typing import NoReturn
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 from models.game_state import GameWorld, GameWorldManager, Episode
 from models.generations import ActorAgentGeneration
-from prompts.survivor_agent_prompts import build_survivor_agent_prompt
+from prompts.actor_agent_prompts import build_actor_agent_prompt
+from prompts.actor_agent_prompts_claude import build_actor_agent_prompt_claude
 
 
 class EpisodeProcessor():
@@ -18,8 +20,8 @@ class EpisodeProcessor():
         game_world_copy: GameWorld = copy.deepcopy(GameWorldManager.get())
         episode: Episode = game_world_copy.active_episodes[self.episode_idx]
 
-        
-        system_prompt = build_survivor_agent_prompt(
+        # system_prompt = build_actor_agent_prompt(
+        system_prompt = build_actor_agent_prompt_claude(
             game_world_copy,
             actor_id
         )
@@ -33,6 +35,7 @@ class EpisodeProcessor():
             SystemMessage(system_prompt),
             HumanMessage("generate facts for your actor according to the above instructions")
         ]
+        # print(system_prompt)
 
         # run actor agent
         print("call llm")
@@ -72,7 +75,7 @@ class EpisodeProcessor():
         print("commit")
         GameWorldManager.set(game_world_copy)
 
-    def process(self, limit: int = 10):
+    def process(self, limit: int = 10, delay = 0):
         
         keep_processing = True
         actor_idx = 0
@@ -87,3 +90,5 @@ class EpisodeProcessor():
                 self.process_actor(actor_id)
                 actor_idx = (actor_idx + 1) % len(episode.actor_ids)
                 remaining -= 1
+                if delay > 0:
+                    time.sleep(delay)

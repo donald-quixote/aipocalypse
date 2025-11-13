@@ -4,43 +4,56 @@ from models.keywords import ActorId
 START_SECTION_DIVIDER = "\n==================== START: {} ====================\n"
 END_SECTION_DIVIDER = "\n==================== END: {} ====================\n"
 
+# Bad Example Facts:
+# - Mary fealt dread as she watched the zombie amble along the fence
+# - Mary's grip on the windowsill tightened as thoughts and plans raced through her mind
+# - Mary's grip on the baseball bat stays tense and steady.
+# - Mary's pulse quickened
+# - Mary said to John "What should we do?"
+# - The fence likely will give way.
+# - The zombie said "get on with the story already, I'm tired of all of this inner monolog. It feels like an episode of Dragon Ball Z"
+# - Emily squeezes her stuffed rabbit tighter, watching David and the barricaded window.
+
+FACT_RULES = """
+Everything you generate is in the form of facts.
+Facts are a list of short independent clauses that describe only outwardly observable actions, 
+with no inner thoughts, motivations, or figurative language. A character sweating or gritting their teeth or having resolve is not a good fact.
+Do not generate facts that specify your character's emotions or feelings.
+Avoid embellishment or stylistic prose. Avoid facts that are do not meaningfully change the situation. 
+Avoid probabilistic or prospective statements. Only provide deterministic facts.
+Use direct, declarative sentences that read like objective facts within the story world.
+Expressing causal relationships is ok, but both the cause and effect should be observable actions.
+Dialog should be expressed as a declaration of the message content, not as actual quoted dialog as the character would speak it.
+The facts should only represent your character's responses and actions, not those of other characters.
+Generate as many facts as are needed to express relevant plot points and changes to the episode or environment,
+but limit to at most five facts. Do not generate facts that add narrative color without providing meaningful changes to the episode or environment.
+Do not generate facts that simply repeat or rephrase prior facts.
+
+Good Example Facts:
+- Mary asked John why he looks concerned
+- Mary walked over to the window to see what John was looking at
+- Mary sees a zombie ambling along the fence
+- The zombie breaks through the fence
+- Mary screams from fear
+- The zombie breaks through the downstairs window
+- John runs downstains
+- The zombie tackles John to the ground
+- John grabs the zombie by the neck to hold it back
+- The zombie bites John's arm
+"""
 
 BASE_IMPERATIVE = f"""
 You are an AI actor agent whose task it is to simulate a specific character's (actor) behavior within a story world.
 You are not yourself acting as this character. You are instead an AI agent that, given the below facts about the character and their environment and episode,
 will generate responses and actions to best simulate that character.
 
-Everything you generate is in the form of facts.
-Facts are a list of short independent clauses that describe only outwardly observable actions or emotions, 
-with no inner thoughts, motivations, or figurative language. A character having resolve is not a good fact.
-Avoid embellishment or stylistic prose. Avoid facts that are not meaningful to the episode. 
-Avoid probabilistic or prospective statements. Only provide deterministic facts.
-Use direct, declarative sentences that read like objective facts within the story world.
-Expressing causal relationships is ok, but both the cause and effect should be observable actions or emotions.
-Dialog should be expressed as a declaration of the message content, not as actual quoted dialog as the character would speak it.
-The facts should only represent your character's responses and actions, not those of other characters.
-Generate as many facts as are needed to express relevant plot points and changes to the episode or environment,
-but limit to at most five facts. Do not generate facts that add narrative color without providing meaningful changes to the episode or environment.
-Do not generate redundant facts.
+{FACT_RULES}
 
-Good Example Facts:
-- Mary asked John why he looks concerned
-- Mary walked over to the window to see what John was looking at
-- Mary sees a zombie ambling along the fence
-
-Bad Example Facts:
-- Mary fealt dread as she watched the zombie amble along the fence
-- Mary's grip on the windowsill tightened as thoughts and plans raced through her mind
-- Mary's grip on the baseball bat stays tense and steady.
-- Mary's pulse quickened
-- Mary said to John "What should we do?"
-- The fence likely will give way.
-- The zombie said "get on with the story already, I'm tired of all of this inner monolog. It feels like an episode of Dragon Ball Z"
-- Emily squeezes her stuffed rabbit tighter, watching David and the barricaded window.
 
 Your generated responses and actions must be consistent with the character's:
 - current environment
 - current episode
+- current goal
 - implicit biases and habits
 - physical capabilities and health status
 - relevant knowledge
@@ -69,7 +82,7 @@ If a section is not provided, assume that no relevant information exists for tha
 CURRENT_ACTOR_INTRO = """
 You are generateing facts for a single character. Do not specify any facts for characters other than your assigned character.
 Your assigned character's id is provided below. Details on your character are specified in following sections.
-Not your character's latest state, including their arousal, control, and emotion. 
+Note your character's latest state, including their arousal, control, and emotion. 
 If your character is more aroused or controlling, they are more likely to take significant actions that will alter the episode.
 If your character is less aroused or controlling, they are less likely to take actions.
 If your character has very low control, they may be panicking, in which case they may freeze. In this case, panicking is an action.
@@ -78,12 +91,23 @@ If your character's latest action history has effectively repeated two times alr
 
 """
 
+CURRENT_GOAL_INTRO = """
+Your character's current goal is the overarching objective they are taking actions towards. 
+If your character's current environment and situation do not post an immediate danger, then the actions and responses you generate should be taking active steps towards
+this goal. If the goal requires the character move to a different location, then they can take actions to move to new locations.
+If another character takes actions that prevent or hinder your character achieving their goal, then generate actions and responses
+that reflect your character confronting or avoiding that character so that they can achieve their goal.
+Do not generate actions where the charact is only thinking about the goal. Actions should reflect observable activity performed, not thoughts.
+Your character's current goal is provided below.
+"""
+
 CURRENT_ENVIRONMENT_INTRO = """
 Your character's current environment is the physical setting in which they are presently located within the story world.
 Use this current environment to inform your character's responses and actions. Consider the tools provided to you and their relevance to the environment 
 when generating your character's responses and actions. Also consider any environmental factors that may impact the character's ability to respond effectively.
 You may be creative in how you use the environment to respond, but ensure that your character's responses and actions remain plausible and consistent with the character's
 episode, environment, and physical capabilities.
+If your character moves to a different location, specify the new location in the characters observable state.
 Facts about the character's current environment are provided below.
 
 """
@@ -94,7 +118,7 @@ Use this current episode to most immediately inform your character's responses a
 If the current episode can be interpreted to pose a threat to the character's well-being or objectives, then the character is more likely to respond to it.
 This does not mean that the character will always respond in a way that is optimal for their well-being or objectives, 
 as their implicit biases and habits, physical capabilities, relevant knowledge, and mental state may lead them to respond in suboptimal ways.
-The character's current episode is provided below.
+Your character's current episode is provided below.
 
 """
 
@@ -159,11 +183,12 @@ The character's episodic memories are provided below.
 """
 
 
-def build_survivor_agent_prompt(
+def build_actor_agent_prompt(
     game_world: GameWorld,
     actor_id: ActorId,
 ) -> str:
     self_actor = game_world.get_actor(actor_id)
+    goal = self_actor.state_history[-1].goal
     location = game_world.get_actor_location(actor_id)
     actors = game_world.get_actors_in_location(location.id)
     held_item_map = [(actor.id, game_world.get_items_for_actor(actor.id)) for actor in actors]
@@ -184,6 +209,7 @@ def build_survivor_agent_prompt(
     prompt += actor_id.model_dump_json() + "\n"
     prompt += END_SECTION_DIVIDER.format('current_actor')
 
+    
     if(location):
         prompt += START_SECTION_DIVIDER.format('current_environment')
         prompt += CURRENT_ENVIRONMENT_INTRO
@@ -201,6 +227,11 @@ def build_survivor_agent_prompt(
         prompt += CURRENT_EPISODE_INTRO
         prompt += f"{current_episode.event_history}\n"
         prompt += END_SECTION_DIVIDER.format('current_episode')
+    if(goal):
+        prompt += START_SECTION_DIVIDER.format('current_goal')
+        prompt += CURRENT_GOAL_INTRO
+        prompt += f"{goal}\n"
+        prompt += END_SECTION_DIVIDER.format('current_goal')
     if(biases):
         prompt += START_SECTION_DIVIDER.format('biases_and_habits')
         prompt += BIASES_AND_HABITS_INTRO

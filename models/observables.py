@@ -1,6 +1,6 @@
 from enum import StrEnum
 from typing import Generic, List, TypeVar
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from models.keywords import ActorId, ItemId, Keyword, EntityId, LocationId, StaticKeywords
 
@@ -76,6 +76,15 @@ class ObservableEntity(Observable, Generic[ID_TYPE, STATE_TYPE]):
     
     def get_keywords(self) -> List[Keyword]:
         return self.keywords + self.state_history[-1].keywords
+    
+    def get_observable_details_str(self) -> str:
+        state = self.state_history[-1]
+        details = f"ID: {self.id}\n"
+        details += f"FACTS: {self.facts + state.facts}\n"
+        details += f"KEYWORDS: {[k.value for k in self.keywords] + [k.value for k in state.keywords]}\n"
+        details += f"STATE: {state}\n"
+        return details
+        
 
 class ObservableLocationState(ObservableState):
     condition: ObservableCondition
@@ -89,6 +98,7 @@ class ObservableActorState(ObservableState):
     arousal: ObservableArousal
     control: ObservableControl
     emotion: Keyword
+    goal: str = Field(exclude=True) #TODO: split out to internal state
 
 class ObservableActorEntity(ObservableEntity[ActorId, ObservableActorState]):
     pass
