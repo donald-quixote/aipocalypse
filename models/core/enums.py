@@ -1,0 +1,72 @@
+from enum import StrEnum
+
+class JunctionCondition(StrEnum):
+    DESTROYED = "DESTROYED"
+    DAMAGED = "DAMAGED"
+    FUNCTIONAL = "FUNCTIONAL"
+    GOOD_CONDITION = "GOOD_CONDITION"
+
+class JunctionAccessibility(StrEnum):
+    OPEN = "OPEN"
+    CLOSED = "CLOSED"
+    LOCKED = "LOCKED"
+    BARRICADED = "BARRICADED"
+    BLOCKED = "BLOCKED"
+
+class LocationType(StrEnum):
+    INTERIOR = "INTERIOR"
+    EXTERIOR_GATED = "EXTERIOR_GATED"
+    EXTERIOR_OPEN = "EXTERIOR_OPEN"
+
+class LocationCondition(StrEnum):
+    DESTROYED = "DESTROYED"
+    DAMAGED = "DAMAGED"
+    FUNCTIONAL = "FUNCTIONAL"
+    GOOD_CONDITION = "GOOD_CONDITION"
+
+class ActorType(StrEnum):
+    HUMAN = "HUMAN"
+    ZOMBIE = "ZOMBIE"
+
+class ActorHealth(StrEnum):
+    DEAD = "DEAD"
+    CRITICAL_HEALTH = "CRITICAL_HEALTH"
+    POOR_HEALTH = "POOR_HEALTH"
+    FAIR_HEALTH = "FAIR_HEALTH"
+    GOOD_HEALTH = "GOOD_HEALTH"
+
+class ActorArousal(StrEnum):
+    INTENSE = "INTENSE"
+    ALERT = "ALERT"
+    CALM = "CALM"
+    PASSIVE = "PASSIVE"
+    UNRESPONSIVE = "UNRESPONSIVE"
+
+class ActorControl(StrEnum):
+    DOMINANT = "DOMINANT"
+    ASSERTIVE = "ASSERTIVE"
+    COMPOSED = "COMPOSED"
+    SUBMISSIVE = "SUBMISSIVE"
+    IMMOBILIZED = "IMMOBILIZED"
+
+class ItemCondition(StrEnum):
+    DESTROYED = "DESTROYED"
+    DAMAGED = "DAMAGED"
+    FUNCTIONAL = "FUNCTIONAL"
+    GOOD_CONDITION = "GOOD_CONDITION"
+
+class ActionType(StrEnum):
+    MOVE = "MOVE"
+    INSPECT = "INSPECT"
+    PREPARE = "PREPARE"
+    TALK = "TALK"
+    FIGHT = "FIGHT"
+    FOCUS = "FOCUS"
+    HOLD = "HOLD"
+    FREEZE = "FREEZE"
+
+class EntityType(StrEnum):
+    ACTOR = "ACTOR"
+    LOCATION = "LOCATION"
+    JUNCTION = "JUNCTION"
+    ITEM = "ITEM"
