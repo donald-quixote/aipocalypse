@@ -20,7 +20,9 @@ class Entity(BaseModel):
     For locations: a descriptive room or area name
     For junctions: a descriptive name for the door, window, gate, or other opening"""
     name: str
-    facts: List[str]
+
+    """a single, declaritive statement that describes the current state of the entity"""
+    fact: str
 
 class LandmarkEntity(Entity):
     """A public, noteworthy location that would appear on a map"""
@@ -31,7 +33,7 @@ class LocationEntity(Entity):
 
     type: LocationType
     condition: LocationCondition
-    landmark_id: str
+    landmark_id: str | None = None
     
 class JunctionEntity(Entity):
     """A connecting passage (door, window, gate, hole, etc) between two locations"""
@@ -67,13 +69,23 @@ class ActorInternalState(BaseModel):
     
     emotion: str
 
-class ActorEntity(Entity):
+    """If the actor get's bitten by a zombie, they become infected."""
+    is_infected: bool = False
+
+class ObservableActorEntity(Entity):
     type: ActorType
     health: ActorHealth
     arousal: ActorArousal
     control: ActorControl
     location_id: str
+
+class ActorEntity(ObservableActorEntity):
     internal: ActorInternalState
+
+    def get_observable(self):
+        copy = self.__dict__.copy()
+        copy.pop("internal")
+        return ObservableActorEntity(**copy)
    
 class ItemEntity(Entity):
     condition: ItemCondition

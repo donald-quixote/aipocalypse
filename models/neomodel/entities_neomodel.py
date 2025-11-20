@@ -7,7 +7,7 @@ from models.neomodel.utils_neomodel import enum_property
 class LocationJunctionRel(StructuredRel):
     uid = StringProperty(unique_index=True, required=True)
     name = StringProperty(index=True, required=True)
-    facts = ArrayProperty(base_property=StringProperty(), required=True)
+    fact = StringProperty(required=True)
 
     accessibility = enum_property(required=True, choices=JunctionAccessibility)
     condition = enum_property(required=True, choices=JunctionCondition)
@@ -15,7 +15,7 @@ class LocationJunctionRel(StructuredRel):
 class EntityNode(StructuredNode):
     uid = StringProperty(unique_index=True, required=True)
     name = StringProperty(index=True, required=True)
-    facts = ArrayProperty(base_property=StringProperty(), required=True)
+    fact = StringProperty(required=True)
 
 class LandmarkNode(EntityNode):
     pass

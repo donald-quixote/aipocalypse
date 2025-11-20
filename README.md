@@ -19,35 +19,29 @@ Aipocalypse is a for-funsies personal project where I will throw the AI kitchen 
 I will learn stuff. Maybe other people will learn stuff. Hopefully the survivor agents will learn stuff (as I do plan to build a system modeling congitive processes for language-based agents).
 
 ## Where are we at?
-- Started simple with my first ever LangGraph flow to generate a candidate set of agent personalities. This is more scaffolding right now - setting a model for a story character and loosely considering the kinds of knowledge that a character will have about themself and the kinds of knowledge they will have about others.
-- Scaffolded a first-pass at a survivor agent system prompt that will contain the observable world state and memory components. Still lots of structure to add here to separate out generations for observable states and internal emotional states.
-  - See notebook for some initial trials! One interesting note: GPT 4.1 mini does not like violence... which will be rough for simulating a zombie apocalypse! We need a trained killer LLM :D 
-- Scaffolded some game entities to carry observable states across agent invocations
+We can generate an interesting "episode" with locations/actors/items, and then task llm agents with choosing and executing actions for the actors.
+Running this in a round-robin fashion, we can watch the scene play out with reasonably plausible activities and reasonably accurate state management.
+
+But... 
+- it's sloooow... a single actor turn takes ~14s
+  - there are both prompt-engineering techniques and game-loop techniques we can use to improve this.
+- it's pure working context, no episodic or semantic memory yet
+- there are a few rough edges around accuracy, though we're solid enough we can move off of prompt engineering and into other techniques to address this.
+
+#### Current System
+- Modeling simulation entities (locations, actors, items) in both pydantic models and Neo4j graph db
+- Using TOON serialization at llm boundaries to reduce token usage
+- Agent to generate a "landmark" location (e.g. a gas station, library, or other building you'd find on a map) with entities and save to graph db
+- Agent to generate next action for an actor, given a current episode state
+- Agent to evaluate the actor's actions and determine a plausible outcome
+- Langgraph flow tying it together so we can process in a loop.
 
 ## Where are we going next?
-- I was inspired by Adam Lucek's [agentic memory](https://github.com/ALucek/agentic-memory) demonstration and plan to scaffold the basic blocks of episodic and semantic memory and learning. 
-  - We'll start with just carrying on coherent conversation with a single survivor agent while managing episodic and semantic memory
-  - But then see what the loop looks like to add a second surivor agent into the mix
-  - and consider how this scales to a party of five survivors
-  - Considering whether to continue using LangGraph or to try OpenAI Agents SDK for the core.
-- And then will take this a step further using [GraphRAG](https://microsoft.github.io/graphrag/) to enhance recall
-  - None of this is taking latency into account just yet. Just want to wire things up and see if I can find some satisfaction with the agent behaviors
+- Actors' goals need to change as they achieve them or circumstances change. We'll start with a simple prompt engineering solution and test.
+- Then we'll add a player actor in the mix with a simple interface and an agent to convert natural language inputs into concrete actions for the system.
+- Once we have a packed experience together, then we'll turn to enriching actor agent behaviors.
+  - I was inspired by Adam Lucek's [agentic memory](https://github.com/ALucek/agentic-memory) demonstration and plan to scaffold the basic blocks of episodic and semantic memory and learning. But, before we can model these, we need enough actor experiences to draw on.
+    - for semantic memory, we'll need to start with generated backstories for survivors and for the game world and initial zombie outbreak, which we can index in a knowledge graph and expose to actor agents
+    - and we'll need to generate multiple episodes so we have something to store in episodic memory :)
+    - we'll likely need to break down gameworld generation to create each element in phases (e.g. backstory -> key actors/landmarks/objectives -> individual episodes then generated on-the-fly as needed with this context)
 
-## What other grand ideas are there?
-- It's a zombie outbreak simulation... there will be zombies...
-  - It's easy to accidentally make agents less coherent... Let's do it on purpose!
-- I'd like to explore modeling emotional states. I've never experienced a zombie outbreak, but I would imagine some people... react more poorly than others.
-  - Fight/flight/freeze behaviors where agents may form a logical plan but fail to act on it under stress
-  - Essentially, can we successfully mimic physiological responses?
-- Encounters! I don't want zombie outbreak survivors to plan my tax filing. I want them to plot their actions to stay alive during zombie encounters.
-  - We'll need some form of simple game mechanics
-  - And a game loop
-  - And to consider how agents might exercise their episodic memory and semantic memory in order to reach their goals.
-  - while having their emotional state enhance or hinder their planning performance
-- And it's not all LLMs!
-  - skill checks could be tests of regression model prediction accuracy. Why not!
-  - MCP to expose interactive elements in the environment to survivor agents? Sure!
-  - Weapons and tools are... wait for it... tools.
-
-## Is this all just naive musings?
-Maybe! But, learning is fun!

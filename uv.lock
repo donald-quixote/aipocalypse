@@ -13,6 +13,8 @@ dependencies = [
     { name = "langchain" },
     { name = "langchain-openai" },
     { name = "langgraph" },
+    { name = "neomodel" },
+    { name = "toonify" },
 ]
 
 [package.metadata]
@@ -23,6 +25,8 @@ requires-dist = [
     { name = "langchain", specifier = ">=1.0.5" },
     { name = "langchain-openai", specifier = ">=1.0.2" },
     { name = "langgraph", specifier = ">=1.0.2" },
+    { name = "neomodel", specifier = ">=5.5.3" },
+    { name = "toonify", specifier = ">=1.4.0" },
 ]
 
 [[package]]
@@ -443,6 +447,30 @@ wheels = [
 ]
 
 [[package]]
+name = "neo4j"
+version = "5.28.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytz" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/50/69/4862fabc082f2447131aada5c91736155349d77ebf443af7f59553b7b789/neo4j-5.28.2.tar.gz", hash = "sha256:7d38e27e4f987a45cc9052500c6ee27325cb23dae6509037fe31dd7ddaed70c7", size = 231874, upload-time = "2025-07-30T06:04:34.669Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/04/00/1f74089c06aec1fac9390e2300a6a6b2381e0dac281783d64ccca9d681fd/neo4j-5.28.2-py3-none-any.whl", hash = "sha256:5c53b5c3eee6dee7e920c9724391aa38d7135a651e71b766da00533b92a91a94", size = 313156, upload-time = "2025-07-30T06:04:31.438Z" },
+]
+
+[[package]]
+name = "neomodel"
+version = "5.5.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "neo4j" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4e/f7/2aeb9924d8146af8ce44e86c02cf10eae753cc71613f85d3a3946b465fc9/neomodel-5.5.3.tar.gz", hash = "sha256:fe36a48843ec9376210804ce90ac7e627da0895290f6702c7cc7dc00f2d66c9e", size = 203741, upload-time = "2025-10-01T14:21:58.592Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/09/c6/24e4832b810f6dfd6473adfb6d5a833ce57d04da4ccf95613b1c3fa5f7d7/neomodel-5.5.3-py3-none-any.whl", hash = "sha256:5568512757d868b224b6d4beeb2e2fa94912ed1286e11bd032e17a9c9355d742", size = 240040, upload-time = "2025-10-01T14:21:57.268Z" },
+]
+
+[[package]]
 name = "openai"
 version = "2.7.1"
 source = { registry = "https://pypi.org/simple" }
@@ -663,6 +691,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f0/26/19cadc79a718c5edbec86fd4919a6b6d3f681039a2f6d66d14be94e75fb9/python_dotenv-1.2.1.tar.gz", hash = "sha256:42667e897e16ab0d66954af0e60a9caa94f0fd4ecf3aaf6d2d260eec1aa36ad6", size = 44221, upload-time = "2025-10-26T15:12:10.434Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/14/1b/a298b06749107c305e1fe0f814c6c74aea7b2f1e10989cb30f544a1b3253/python_dotenv-1.2.1-py3-none-any.whl", hash = "sha256:b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61", size = 21230, upload-time = "2025-10-26T15:12:09.109Z" },
+]
+
+[[package]]
+name = "pytz"
+version = "2025.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f8/bf/abbd3cdfb8fbc7fb3d4d38d320f2441b1e7cbe29be4f23797b4a2b5d8aac/pytz-2025.2.tar.gz", hash = "sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3", size = 320884, upload-time = "2025-03-25T02:25:00.538Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/81/c4/34e93fe5f5429d7570ec1fa436f1986fb1f00c3e0f43a589fe2bbcd22c3f/pytz-2025.2-py2.py3-none-any.whl", hash = "sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00", size = 509225, upload-time = "2025-03-25T02:24:58.468Z" },
 ]
 
 [[package]]
@@ -888,6 +925,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/28/c0/3c7a39ff68022ddfd7d93f3337ad90389a342f761c4d71de99a3ccc57857/tiktoken-0.12.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:54c891b416a0e36b8e2045b12b33dd66fb34a4fe7965565f1b482da50da3e86a", size = 1194908, upload-time = "2025-10-06T20:22:32.073Z" },
     { url = "https://files.pythonhosted.org/packages/ab/0d/c1ad6f4016a3968c048545f5d9b8ffebf577774b2ede3e2e352553b685fe/tiktoken-0.12.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:5edb8743b88d5be814b1a8a8854494719080c28faaa1ccbef02e87354fe71ef0", size = 1253706, upload-time = "2025-10-06T20:22:33.385Z" },
     { url = "https://files.pythonhosted.org/packages/af/df/c7891ef9d2712ad774777271d39fdef63941ffba0a9d59b7ad1fd2765e57/tiktoken-0.12.0-cp314-cp314t-win_amd64.whl", hash = "sha256:f61c0aea5565ac82e2ec50a05e02a6c44734e91b51c10510b084ea1b8e633a71", size = 920667, upload-time = "2025-10-06T20:22:34.444Z" },
+]
+
+[[package]]
+name = "toonify"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tiktoken" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b2/90/ca42b9fe0d8cc90c69ca62dd788100119c8186474a52ef9e850f33f59212/toonify-1.4.0.tar.gz", hash = "sha256:fdef2754607fe0695e7243a4b0b56f8bee1d41fd98a9cd673409760d39e4220d", size = 22394, upload-time = "2025-11-13T00:13:14.372Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/15/4022bde2fda1662ac8a97d2d1aa916f10dad83a2cd7edab31b8e35a6175f/toonify-1.4.0-py3-none-any.whl", hash = "sha256:8053c376342b63356bad570c94d8b40eb8d6374815292542a0adc974c9c2912d", size = 21445, upload-time = "2025-11-13T00:13:11.743Z" },
 ]
 
 [[package]]

@@ -51,6 +51,7 @@ class ActorControl(StrEnum):
 
 class ItemCondition(StrEnum):
     DESTROYED = "DESTROYED"
+    CONSUMED = "CONSUMED"
     DAMAGED = "DAMAGED"
     FUNCTIONAL = "FUNCTIONAL"
     GOOD_CONDITION = "GOOD_CONDITION"
@@ -70,3 +71,9 @@ class EntityType(StrEnum):
     LOCATION = "LOCATION"
     JUNCTION = "JUNCTION"
     ITEM = "ITEM"
+
+class OutcomeType(StrEnum):
+    CRITICAL_SUCCESS = "CRITICAL_SUCCESS"
+    SUCCESS = "SUCCESS"
+    FAILURE = "FAILURE"
+    CRITICAL_FAILURE = "CRITICAL_FAILURE"
