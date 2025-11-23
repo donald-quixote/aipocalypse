@@ -1,6 +1,6 @@
 
 import random
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel
 
 from models.core.entities import ActorEntity, ItemEntity, JunctionEntity, LocationEntity
@@ -29,10 +29,10 @@ class Outcome(BaseModel):
     attention: int
 
     """resulting status of the action's source entity. If there are no status changes to source entity, omit this"""
-    resulting_source_entity_status: ActorEntity | None = None 
+    resulting_source_entity_status: Union[ActorEntity, None] = None 
 
     """resulting status of the action's target entity. If there are no status changes to target entity, omit this"""
-    resulting_target_entity_status: LocationEntity | JunctionEntity | ActorEntity | ItemEntity | None = None
+    resulting_target_entity_status: Union[LocationEntity, JunctionEntity, ActorEntity, ItemEntity, None] = None
 
     """a single, short declarative statement about the outcome of an action. Should not describe further actions."""
     fact: str

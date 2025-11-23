@@ -121,6 +121,10 @@ class LandmarkExpansionAgentPrompt:
         - Each actor must have **distinct goals** that drive their behavior
         - Goals should create **potential conflict** or **require coordination**
         - Vary health, arousal, control, and emotion across characters
+        - Actor names are full names (first + last). Even zombies have normal names - they we're people once.
+        - Campaign goals are long-term objectives, likely outside of the scope of this scene being generate.
+        - Episode goals are what the character is aiming to achieve in this landmark. Once it's achieved, they don't have reason to hang out here.
+        - Immediate goals are steps to take to achieve the episode goal.
 
         ### Character State Guidelines
 

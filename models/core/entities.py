@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel
 
 from models.core.enums import (ActorArousal, ActorControl, ActorHealth, ActorType, ItemCondition, 
@@ -33,7 +33,7 @@ class LocationEntity(Entity):
 
     type: LocationType
     condition: LocationCondition
-    landmark_id: str | None = None
+    landmark_id: Union[str, None] = None
     
 class JunctionEntity(Entity):
     """A connecting passage (door, window, gate, hole, etc) between two locations"""

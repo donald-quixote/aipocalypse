@@ -71,17 +71,18 @@ class SurvivorAgentPrompt:
                     {dropped_items_info}
 
             Recent actions:
-                {episode_action_info}
+                {episode_outcomes_info}
         
         Critical Instructions
 
         Read the recent actions - What just happened? Provide a synopsis.
+        Check your character's location. Provide the location_id
         Identify immediate threats or opportunities - Does anything demand a response?
         Check your character's goals - If no immediate threat, what action moves toward the goals?
         Apply character state - Adjust actions and intensity based on health/arousal/control
         Choose actions that will have the most impact on your character and the rest of the episode.
         Verify no repetition - Are you doing something meaningfully different from your last actions?
-        Provide two, distinctly different plans.
+        Provide two, distinctly different plans that adhere to your character's current state, location, and surroundings
         Finally, select the more interesting and impactful plan and generate EXACTLY two actions.
         """
 
@@ -100,7 +101,7 @@ class SurvivorAgentPrompt:
             actors_info = encode_pydantic(env.get_observable_actors()),
             held_items_info = encode_pydantic(env.get_held_items()),
             dropped_items_info = encode_pydantic(env.get_dropped_items()),
-            episode_action_info = encode_pydantic(env.actions),
+            episode_outcomes_info = "\n".join(a.fact for a in env.outcomes),
         )
         sys_prompt += PromptFragments.CONFLICTING_CONTEXT_RULE
 

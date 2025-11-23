@@ -151,6 +151,7 @@ class OutcomeEvaluatorAgentPrompt:
         FACT_GUIDELINES = """
         Outcome Fact Guidelines:
             Generate a fact per outcome.
+            Facts should specify the original action the character attempted, along with the final outcome result.
 
             INCLUDE in outcome facts:
                 Observable results of the character's attempt
@@ -159,19 +160,17 @@ class OutcomeEvaluatorAgentPrompt:
                 New information discovered
                 Immediate consequences
             EXCLUDE from outcome facts:
-                Actions taken by the character (only show outcomes)
                 The character's internal thoughts or feelings
                 Future predictions or possibilities
                 Other characters' reactions (those come from their own action evaluations)
                 Narrative embellishment or color commentary
                 Absolute guarantees about ongoing states
             Good Examples:
-                "Jolene forces the storage room door open"
-                "The door hinges screech loudly"
-                "The zombie staggers backward clutching its head"
-                "Jolene spots shotgun shells on the shelf"
+                "Jolene takes a defensive swing at the zombie with the tire iron, but misses"
+                "Jolene attempts to force the storage room door open and it eventually moves, its hinges screeching loudly"
+                "Jolene strikes the zombie in the head with the bat"
+                "Jolene scans the room for useful items and spots shotgun shells on the shelf"
             Bad Examples:
-                "Jolene takes a defensive swing at the zombie with the tire iron" (action, not outcome)
                 "Jolene feels relieved" (internal state)
                 "The zombie will attack next turn" (prediction)
                 "Cora hears the door and comes running" (other character's reaction)
@@ -230,6 +229,7 @@ class OutcomeEvaluatorAgentPrompt:
         sys_prompt += BASELINE_SUCCESS_RATES
         sys_prompt += ENVIRONMENT_FACTORS
         sys_prompt += FACT_GUIDELINES
+        sys_prompt += GOAL_RULES
         sys_prompt += WORKING_CONTEXT.format(
             character_info = encode_pydantic(actor),
             actions = encode_pydantic(actions),

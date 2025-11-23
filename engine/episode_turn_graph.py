@@ -17,6 +17,7 @@ from models.core.episode import Episode
 from models.core.enums import ActorHealth, ActorType
 from models.neomodel.queries_neomodel import NeoModelQueries
 from prompts.outcome_evaluator_agent_prompt import OutcomeEvaluatorAgentPrompt
+from prompts.player_agent_prompt import PlayerAgentPrompt
 from prompts.prompt_generations import (
     OutcomeEvaluationGeneration,
     SurivorActionGeneration,
@@ -39,13 +40,16 @@ class EpisodeTurnGraph:
     """LangGraph flow that processes a single actor turn."""
 
     def __init__(
-        self
+        self,
+        player_actor_id: str | None,
     ) -> None:
         base_model = ChatOpenAI(model="gpt-4.1", temperature=0.9)
 
         self.survivor_llm = base_model.with_structured_output(SurivorActionGeneration)
         self.zombie_llm = base_model.with_structured_output(ZombieActionGeneration)
         self.evaluator_llm = base_model.with_structured_output(OutcomeEvaluationGeneration)
+
+        self.player_actor_id = player_actor_id
 
         builder = StateGraph(EpisodeTurnState)
         builder.add_node("generate_actions", self._generate_actions)
@@ -80,20 +84,32 @@ class EpisodeTurnGraph:
         episode = state["episode"]
         actor_id = state["actor_id"]
         actor = episode.actors[actor_id]
+        is_player = actor_id == self.player_actor_id
         if(actor.health == ActorHealth.DEAD):
+            if is_player:
+                print(f"### You are {actor.name}. You are dead...")
             return state
-
-        match actor.type:
-            case ActorType.ZOMBIE:
-                messages = ZombieAgentPrompt.build_prompt_messages(episode, actor_id)
-                generation = self.zombie_llm.invoke(messages)
-                actions = [generation.action]
-            case ActorType.HUMAN:
-                messages = SurvivorAgentPrompt.build_prompt_messages(episode, actor_id)
-                generation = self.survivor_llm.invoke(messages)
-                actions = list(generation.actions)
+        
+        if is_player:
+            user_prompt = input(f"### You are {actor.name}. What will you do?")
+            messages = PlayerAgentPrompt.build_prompt_messages(episode, actor_id, user_prompt)
+            generation = self.survivor_llm.invoke(messages)
+            actions = list(generation.actions)
+        else:
+            match actor.type:
+                case ActorType.ZOMBIE:
+                    messages = ZombieAgentPrompt.build_prompt_messages(episode, actor_id)
+                    generation = self.zombie_llm.invoke(messages)
+                    actions = [generation.action]
+                case ActorType.HUMAN:
+                    messages = SurvivorAgentPrompt.build_prompt_messages(episode, actor_id)
+                    generation = self.survivor_llm.invoke(messages)
+                    actions = list(generation.actions)
 
         episode.actions.extend(actions)
+
+        print("\n".join([a.fact for a in actions])) #TODO: factor output out of here
+
         return {**state, "episode": episode, "actions": actions}
 
     def _evaluate_actions(
@@ -110,6 +126,8 @@ class EpisodeTurnGraph:
         generation = self.evaluator_llm.invoke(messages)
         outcomes = list(generation.outcomes)
         episode.outcomes.extend(outcomes)
+
+        print("\n".join([o.fact for o in outcomes])) #TODO: factor output out of here
 
         return {**state, "episode": episode, "outcomes": outcomes}
 

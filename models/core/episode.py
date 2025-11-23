@@ -14,6 +14,7 @@ class Environment(BaseModel):
 
     actions: List[Action] = []
     outcomes: List[Outcome] = []
+    
 
     def get_actor_surroundings(self, actor_id: str):
         target_actor = self.actors[actor_id]

@@ -11,6 +11,9 @@ class ActorPlanGeneration(BaseModel):
     """A summary of recent events, in one sentence"""
     synopsis: str
 
+    """The character's current location"""
+    location_id: str
+
     """A description of one possible plan, in one sentence"""
     plan_1: str
     """A description of another, different, possible plan, in one sentence"""
